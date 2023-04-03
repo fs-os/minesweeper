@@ -13,16 +13,16 @@
 #define REVEAL_SURROUNDING
 
 /*
- * If you compile the program with USE_COLOR and your terminal supports it, it
- * will render the tiles with color.
+ * If you compile the program with USE_ARROWS, you will be able to navigate with
+ * the arrows.
  */
-#define USE_COLOR
+/* #define USE_ARROWS */
 
 /*
- * If you compile the program with USE_MOUSE and your terminal supports it, it
- * will make the tiles clickable.
+ * If you compile the program with USE_COLOR, it will render the tiles with
+ * color.
  */
-#define USE_MOUSE
+/* #define USE_COLOR */
 
 enum color_ids {
     COL_NORM = 0, /* White */
@@ -40,6 +40,8 @@ enum color_ids {
     COL_UNK  = 12, /* Gray */
 };
 
+#ifdef USE_COLOR
+/* TODO: Use fbc colors instead of color pairs */
 #define SET_COL(col)                 \
     {                                \
         if (use_color) {             \
@@ -67,6 +69,12 @@ enum color_ids {
             attroff(A_BOLD); \
         }                    \
     }
+#else
+#define SET_COL(col)
+#define RESET_COL(col)
+#define BOLD_ON(col)
+#define BOLD_OFF(col)
+#endif
 
 #define DEFAULT_W 50
 #define DEFAULT_H 20

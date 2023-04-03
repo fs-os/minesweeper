@@ -36,6 +36,8 @@ typedef struct {
 /* Used to check if we can use color at runtime */
 bool use_color = false;
 
+WINDOW* stdscr;
+
 /* parse_resolution: parses a resolution string with format "WIDTHxHEIGHT" using
  * atoi. Saves integers in dst_w and dst_h */
 static void parse_resolution(uint16_t* dst_w, uint16_t* dst_h, char* src) {
@@ -64,7 +66,7 @@ static inline bool parse_args(int argc, char** argv, ms_t* ms) {
     for (int i = 1; i < argc; i++) {
         if (!strcmp(argv[i], "-r") || !strcmp(argv[i], "--resolution")) {
             if (i == argc - 1) {
-                fprintf(stderr, "Not enough arguments for \"%s\"\n", argv[i]);
+                printf("Not enough arguments for \"%s\"\n", argv[i]);
                 arg_error = true;
                 break;
             }
@@ -72,26 +74,24 @@ static inline bool parse_args(int argc, char** argv, ms_t* ms) {
             i++;
             parse_resolution(&ms->w, &ms->h, argv[i]);
             if (ms->w < MIN_W || ms->h < MIN_H) {
-                fprintf(stderr,
-                        "Invalid resolution format for \"%s\".\n"
-                        "Minimum resolution: %dx%d\n",
-                        argv[i - 1], MIN_W, MIN_H);
+                printf("Invalid resolution format for \"%s\".\n"
+                       "Minimum resolution: %dx%d\n",
+                       argv[i - 1], MIN_W, MIN_H);
                 arg_error = true;
                 break;
             }
         } else if (!strcmp(argv[i], "-d") || !strcmp(argv[i], "--difficulty")) {
             if (i == argc - 1) {
-                fprintf(stderr, "Not enough arguments for \"%s\"\n", argv[i]);
+                printf("Not enough arguments for \"%s\"\n", argv[i]);
                 arg_error = true;
                 break;
             }
 
             ms->difficulty = atoi(argv[++i]);
             if (ms->difficulty < 1 || ms->difficulty > 100) {
-                fprintf(stderr,
-                        "Invalid difficulty format for \"%s\".\n"
-                        "Difficulty range: 1-100\n",
-                        argv[i - 1]);
+                printf("Invalid difficulty format for \"%s\".\n"
+                       "Difficulty range: 1-100\n",
+                       argv[i - 1]);
                 arg_error = true;
                 break;
             }
@@ -115,21 +115,20 @@ static inline bool parse_args(int argc, char** argv, ms_t* ms) {
     }
 
     if (arg_error) {
-        fprintf(stderr,
-                "Usage:\n"
-                "    %s                   - Launch with default resolution\n"
-                "    %s --help            - Show this help\n"
-                "    %s -h                - Same as --help\n"
-                "    %s --keys            - Show the controls\n"
-                "    %s -k                - Same as --keys\n"
-                "    %s --resolution WxH  - Launch with specified resolution "
-                "(width, height)\n"
-                "    %s -r WxH            - Same as --resolution\n"
-                "    %s --difficulty N    - Use specified difficulty from 1 to "
-                "100. Default: 40\n"
-                "    %s -d N              - Same as --difficulty\n",
-                argv[0], argv[0], argv[0], argv[0], argv[0], argv[0], argv[0],
-                argv[0], argv[0]);
+        printf("Usage:\n"
+               "    %s                   - Launch with default resolution\n"
+               "    %s --help            - Show this help\n"
+               "    %s -h                - Same as --help\n"
+               "    %s --keys            - Show the controls\n"
+               "    %s -k                - Same as --keys\n"
+               "    %s --resolution WxH  - Launch with specified resolution "
+               "(width, height)\n"
+               "    %s -r WxH            - Same as --resolution\n"
+               "    %s --difficulty N    - Use specified difficulty from 1 to "
+               "100. Default: 40\n"
+               "    %s -d N              - Same as --difficulty\n",
+               argv[0], argv[0], argv[0], argv[0], argv[0], argv[0], argv[0],
+               argv[0], argv[0]);
         return false;
     }
 
@@ -280,10 +279,9 @@ static void generate_grid(ms_t* ms, point_t start, int bomb_percent) {
     const int max_bombs = ms->w * ms->h - BOMB_MARGIN * 4;
     if (total_bombs > max_bombs) {
 #ifdef DEBUG
-        fprintf(stderr,
-                "generate_grid: Error. Can't generate %d bombs (%d%%) in grid "
-                "%dx%d.\n",
-                total_bombs, bomb_percent, ms->h, ms->w);
+        printf("generate_grid: Error. Can't generate %d bombs (%d%%) in grid "
+               "%dx%d.\n",
+               total_bombs, bomb_percent, ms->h, ms->w);
         return;
 #endif
         total_bombs = max_bombs;
@@ -409,19 +407,15 @@ int minesweeper_main(int argc, char** argv) {
         .difficulty = DEFAULT_DIFFICULTY,
     };
 
-    /* Parse arguments before ncurses */
+    /* Parse arguments before curses */
     if (!parse_args(argc, argv, &ms))
         return 1;
 
-    initscr();            /* Init ncurses */
-    raw();                /* Scan input without pressing enter */
-    noecho();             /* Don't print when typing */
+    stdscr = initscr(); /* Init curses */
+    raw();                      /* Scan input without pressing enter */
+    noecho();                   /* Don't print when typing */
+#ifdef USE_ARROWS
     keypad(stdscr, true); /* Enable keypad (arrow keys) */
-
-#ifdef USE_MOUSE
-    /* Enable mouse support and declare ncurses mouse event */
-    mousemask(BUTTON1_PRESSED | BUTTON3_PRESSED, NULL);
-    MEVENT event;
 #endif
 
 #ifdef USE_COLOR
@@ -488,54 +482,33 @@ int minesweeper_main(int argc, char** argv) {
         /* Parse input. 'q' quits and there is vim-like navigation */
         switch (c) {
             case 'k':
+#ifdef USE_ARROWS
             case KEY_UP:
+#endif
                 if (cursor.y > 0)
                     cursor.y--;
                 break;
             case 'j':
+#ifdef USE_ARROWS
             case KEY_DOWN:
+#endif
                 if (cursor.y < ms.h - 1)
                     cursor.y++;
                 break;
             case 'h':
+#ifdef USE_ARROWS
             case KEY_LEFT:
+#endif
                 if (cursor.x > 0)
                     cursor.x--;
                 break;
             case 'l':
+#ifdef USE_ARROWS
             case KEY_RIGHT:
+#endif
                 if (cursor.x < ms.w - 1)
                     cursor.x++;
                 break;
-#ifdef USE_MOUSE
-            case KEY_MOUSE:
-                if (getmouse(&event) == OK) {
-                    const int border_sz = 1;
-                    if (event.bstate & BUTTON1_PRESSED) {
-                        cursor.y = event.y - border_sz;
-                        if (cursor.y >= ms.h)
-                            cursor.y = ms.h - 1;
-
-                        cursor.x = event.x - border_sz;
-                        if (cursor.x >= ms.w)
-                            cursor.x = ms.w - 1;
-
-                        goto clearTile;
-                    } else if (event.bstate & BUTTON3_PRESSED) {
-                        cursor.y = event.y - border_sz;
-                        if (cursor.y >= ms.h)
-                            cursor.y = ms.h - 1;
-
-                        cursor.x = event.x - border_sz;
-                        if (cursor.x >= ms.w)
-                            cursor.x = ms.w - 1;
-
-                        goto toggleFlag;
-                    }
-                }
-                break;
-            toggleFlag:
-#endif
             case 'f':
                 /* If we just started playing, but we don't have the bombs */
                 if (ms.playing == PLAYING_CLEAR) {
@@ -552,9 +525,6 @@ int minesweeper_main(int argc, char** argv) {
                 }
 
                 break;
-#ifdef USE_MOUSE
-            clearTile:
-#endif
             case ' ':
                 /* Initialize the bombs once we reveal for the first time */
                 if (ms.playing == PLAYING_CLEAR) {
@@ -591,14 +561,8 @@ int minesweeper_main(int argc, char** argv) {
         }
     } while (c != 'q');
 
-    /* Reset colors just in case */
-    if (use_color) {
-        attroff(A_BOLD);
-        attron(COLOR_PAIR(COL_NORM));
-    }
-
     free(ms.grid);
-    endwin();
+    endwin(stdscr);
     return 0;
 }
 
