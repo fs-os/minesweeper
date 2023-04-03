@@ -11,41 +11,6 @@ vim-like movement. It has mouse support (if your terminal supports it and it
 was compiled with `USE_MOUSE`) and also has color support (if your terminal
 supports it and it was compiled with `USE_COLOR`).
 
-### Building
-Simply run:
-```console
-$ git clone https://github.com/8dcc/minesweeper
-$ cd minesweeper
-$ make
-...
-```
-
-If you encounter an error like:
-```console
-$ make
-gcc -Wall -Wextra -o minesweeper.out src/main.c -lncurses -ltinfo
-/bin/ld: cannot find -ltinfo: No such file or directory
-collect2: error: ld returned 1 exit status
-make: *** [Makefile:22: minesweeper.out] Error 1
-```
-
-Try removing `-ltinfo` from the linker options:
-```diff
-diff --git a/Makefile b/Makefile
-index bc53b0e..c64d41d 100644
---- a/Makefile
-+++ b/Makefile
-@@ -1,7 +1,7 @@
-
- CC=gcc
- CFLAGS=-Wall -Wextra
--LDFLAGS=-lncurses -ltinfo
-+LDFLAGS=-lncurses
- BIN=minesweeper.out
-
- .PHONY: clean all run
-```
-
 ### Usage
 #### Parameters:
 ```console
@@ -134,15 +99,5 @@ want color support:
  * will render the tiles with color.
  */
 #define USE_COLOR
-```
-
-Comment the following line inside [`src/defines.h`](src/defines.h) if you don't
-want mouse support:
-```c
-/*
- * If you compile the program with USE_MOUSE and your terminal supports it, it
- * will make the tiles clickable.
- */
-#define USE_MOUSE
 ```
 
