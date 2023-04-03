@@ -2,12 +2,14 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include <time.h>  /* time */
 #include <ctype.h> /* tolower */
-#include <ncurses.h>
+#include <curses.h>
 
 #include "defines.h"
 
