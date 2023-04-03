@@ -399,7 +399,7 @@ static bool check_win(ms_t* ms) {
     return true;
 }
 
-int main(int argc, char** argv) {
+int minesweeper_main(int argc, char** argv) {
     /* Main minesweeper struct */
     ms_t ms = (ms_t){
         .w          = DEFAULT_W,
