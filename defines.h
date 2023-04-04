@@ -22,7 +22,7 @@
  * If you compile the program with USE_COLOR, it will render the tiles with
  * color.
  */
-/* #define USE_COLOR */
+#define USE_COLOR
 
 enum color_ids {
     COL_NORM = 0, /* White */
