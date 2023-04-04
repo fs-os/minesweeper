@@ -434,7 +434,7 @@ int minesweeper_main(int argc, char** argv) {
         init_pair(COL_9, COLOR_MAGENTA, COLOR_BLACK);
         init_pair(COL_FLAG, COLOR_RED, COLOR_BLACK);
         init_pair(COL_BOMB, COLOR_RED, COLOR_BLACK);
-        init_pair(COL_UNK, COLOR_WHITE, COLOR_BLACK);
+        init_pair(COL_UNK, COLOR_GRAY_B, COLOR_BLACK);
     }
 #endif
 
