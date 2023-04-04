@@ -211,7 +211,7 @@ static inline void clear_line(int y) {
 }
 
 /* redraw_grid: redraws the grid based on the ms.grid array */
-static void redraw_grid(ms_t* ms) {
+static void redraw_grid(ms_t* ms, point_t* cursor) {
     const int border_sz = 1;
 
     draw_border(ms);
@@ -220,37 +220,45 @@ static void redraw_grid(ms_t* ms) {
         for (int x = 0; x < ms->w; x++) {
             const int final_y = y + border_sz;
             const int final_x = x + border_sz;
+            int final_col     = COL_NORM;
+            char final_ch     = 0;
 
             if (ms->grid[y * ms->w + x].flags & FLAG_CLEARED) {
                 const int bombs = get_bombs(ms, y, x);
                 if (ms->grid[y * ms->w + x].c == BOMB_CH) {
-                    SET_COL(COL_BOMB);
-
                     /* Bomb (we lost) */
-                    mvaddch(final_y, final_x, BOMB_CH);
+                    final_col = COL_BOMB;
+                    final_ch  = BOMB_CH;
                 } else if (bombs) {
                     BOLD_ON();
                     /* 5 -> COL_5. See color_ids enum in defines.h */
-                    SET_COL(bombs);
+                    final_col = bombs;
 
                     /* Number */
-                    mvaddch(final_y, final_x, bombs + '0');
+                    final_ch = bombs + '0';
                 } else {
-                    SET_COL(COL_NORM);
-
                     /* Empty tile with no bombs adjacent */
-                    mvaddch(final_y, final_x, ms->grid[y * ms->w + x].c);
+                    final_col = COL_NORM;
+                    final_ch  = ms->grid[y * ms->w + x].c;
                 }
             } else if (ms->grid[y * ms->w + x].flags & FLAG_FLAGGED) {
                 BOLD_ON();
-                SET_COL(COL_FLAG);
-
-                mvaddch(final_y, final_x, FLAG_CH);
+                final_col = COL_FLAG;
+                final_ch  = FLAG_CH;
             } else {
-                SET_COL(COL_UNK);
-
-                mvaddch(final_y, final_x, UNKN_CH);
+                final_col = COL_UNK;
+                final_ch  = UNKN_CH;
             }
+
+            if (y == cursor->y && x == cursor->x)
+                INVERT_COL(final_col);
+
+            SET_COL(final_col);
+
+            mvaddch(final_y, final_x, final_ch);
+
+            if (y == cursor->y && x == cursor->x)
+                INVERT_COL(final_col);
 
             RESET_COL();
             BOLD_OFF();
@@ -438,16 +446,16 @@ int minesweeper_main(int argc, char** argv) {
     init_grid(&ms);
     ms.playing = PLAYING_CLEAR;
 
-    redraw_grid(&ms);
-
     /* User cursor in the grid, not the screen. Start at the middle. */
     point_t cursor = (point_t){ (ms.h - 1) / 2, (ms.w - 1) / 2 };
+
+    redraw_grid(&ms, &cursor);
 
     /* Char the user is pressing */
     int c = 0;
     do {
         /* First, redraw the grid */
-        redraw_grid(&ms);
+        redraw_grid(&ms, &cursor);
 
         /* Update the cursor (+margins) */
         move(cursor.y + 1, cursor.x + 1);

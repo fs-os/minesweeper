@@ -54,6 +54,13 @@ enum color_ids {
         }                 \
     }
 
+#define INVERT_COL(col)       \
+    {                         \
+        if (use_color) {      \
+            invert_pair(col); \
+        }                     \
+    }
+
 /* Not supported in fs-os yet */
 #define BOLD_ON()
 #define BOLD_OFF()
