@@ -40,41 +40,23 @@ enum color_ids {
     COL_UNK  = 12, /* Gray */
 };
 
-#ifdef USE_COLOR
-/* TODO: Use fbc colors instead of color pairs */
-#define SET_COL(col)                 \
-    {                                \
-        if (use_color) {             \
-            attron(COLOR_PAIR(col)); \
-        }                            \
+#define SET_COL(col)       \
+    {                      \
+        if (use_color) {   \
+            use_pair(col); \
+        }                  \
     }
 
-#define RESET_COL(col)                \
-    {                                 \
-        if (use_color) {              \
-            attroff(COLOR_PAIR(col)); \
-        }                             \
+#define RESET_COL()       \
+    {                     \
+        if (use_color) {  \
+            reset_pair(); \
+        }                 \
     }
 
-#define BOLD_ON()           \
-    {                       \
-        if (use_color) {    \
-            attron(A_BOLD); \
-        }                   \
-    }
-
-#define BOLD_OFF()           \
-    {                        \
-        if (use_color) {     \
-            attroff(A_BOLD); \
-        }                    \
-    }
-#else
-#define SET_COL(col)
-#define RESET_COL(col)
-#define BOLD_ON(col)
-#define BOLD_OFF(col)
-#endif
+/* Not supported in fs-os yet */
+#define BOLD_ON()
+#define BOLD_OFF()
 
 #define DEFAULT_W 50
 #define DEFAULT_H 20

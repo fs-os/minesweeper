@@ -156,7 +156,7 @@ static void draw_border(ms_t* ms) {
         mvaddch(ms->h + 1, x + 1, '-');
     mvaddch(ms->h + 1, ms->w + 1, '+');
 
-    RESET_COL(COL_NORM);
+    RESET_COL();
     BOLD_OFF();
 }
 
@@ -194,7 +194,7 @@ static void print_message(ms_t* ms, const char* str) {
 
     mvprintw(ms->h + 3, 1, "%s", str);
 
-    RESET_COL(COL_NORM);
+    RESET_COL();
 
     move(y, x);
 }
@@ -228,8 +228,6 @@ static void redraw_grid(ms_t* ms) {
 
                     /* Bomb (we lost) */
                     mvaddch(final_y, final_x, BOMB_CH);
-
-                    RESET_COL(COL_BOMB);
                 } else if (bombs) {
                     BOLD_ON();
                     /* 5 -> COL_5. See color_ids enum in defines.h */
@@ -237,32 +235,25 @@ static void redraw_grid(ms_t* ms) {
 
                     /* Number */
                     mvaddch(final_y, final_x, bombs + '0');
-
-                    RESET_COL(bombs);
-                    BOLD_OFF();
                 } else {
                     SET_COL(COL_NORM);
 
                     /* Empty tile with no bombs adjacent */
                     mvaddch(final_y, final_x, ms->grid[y * ms->w + x].c);
-
-                    RESET_COL(COL_NORM);
                 }
             } else if (ms->grid[y * ms->w + x].flags & FLAG_FLAGGED) {
                 BOLD_ON();
                 SET_COL(COL_FLAG);
 
                 mvaddch(final_y, final_x, FLAG_CH);
-
-                RESET_COL(COL_FLAG);
-                BOLD_OFF();
             } else {
                 SET_COL(COL_UNK);
 
                 mvaddch(final_y, final_x, UNKN_CH);
-
-                RESET_COL(COL_UNK);
             }
+
+            RESET_COL();
+            BOLD_OFF();
         }
     }
 }
@@ -410,8 +401,8 @@ int minesweeper_main(int argc, char** argv) {
         return 1;
 
     initscr(); /* Init curses */
-    raw();                      /* Scan input without pressing enter */
-    noecho();                   /* Don't print when typing */
+    raw();     /* Scan input without pressing enter */
+    noecho();  /* Don't print when typing */
 #ifdef USE_ARROWS
     keypad(stdscr, true); /* Enable keypad (arrow keys) */
 #endif
