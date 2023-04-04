@@ -36,8 +36,6 @@ typedef struct {
 /* Used to check if we can use color at runtime */
 bool use_color = false;
 
-WINDOW* stdscr;
-
 /* parse_resolution: parses a resolution string with format "WIDTHxHEIGHT" using
  * atoi. Saves integers in dst_w and dst_h */
 static void parse_resolution(uint16_t* dst_w, uint16_t* dst_h, char* src) {
@@ -411,7 +409,7 @@ int minesweeper_main(int argc, char** argv) {
     if (!parse_args(argc, argv, &ms))
         return 1;
 
-    stdscr = initscr(); /* Init curses */
+    initscr(); /* Init curses */
     raw();                      /* Scan input without pressing enter */
     noecho();                   /* Don't print when typing */
 #ifdef USE_ARROWS
@@ -562,7 +560,7 @@ int minesweeper_main(int argc, char** argv) {
     } while (c != 'q');
 
     free(ms.grid);
-    endwin(stdscr);
+    endwin();
     return 0;
 }
 
