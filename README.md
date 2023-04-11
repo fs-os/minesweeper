@@ -2,9 +2,10 @@
 **CLI minesweeper made in C using ncurses.**
 
 ### Description
-:warning: This is a fork of [8dcc/minesweeper](https://github.com/8dcc/minesweeper)
-for [fs-os](https://github.com/fs-os/fs-os). You can try it there by running the
-`minesweeper` command.
+> **Note**
+> This is a fork of [8dcc/minesweeper](https://github.com/8dcc/minesweeper)
+> for [fs-os](https://github.com/fs-os/fs-os). You can try it there by running
+> the `minesweeper` command.
 
 Simple CLI minesweeper with custom resolution (game size), difficulty and
 vim-like movement. It has mouse support (if your terminal supports it and it
