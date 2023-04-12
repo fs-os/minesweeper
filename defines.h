@@ -20,7 +20,7 @@
  * @details If you compile the program with `USE_ARROWS`, you will be able to
  * navigate with the arrows.
  */
-#define USE_ARROWS
+/* #define USE_ARROWS */
 
 /**
  * @def USE_COLOR
@@ -91,6 +91,10 @@ enum color_ids {
  * @brief Bombs won't spawn in a 3x3 grid from the starting reveal
  */
 #define BOMB_MARGIN 3
+
+#define DEFAULT_DIFFICULTY 30 /**< @brief 1-100% */
+#define MIN_BOMBS          5  /**< @brief Minimum ammount of bombs */
+#define MAX_BOMBS          60 /**< @brief Maximum ammount of bombs */
 
 /**
  * @enum tile_flags
