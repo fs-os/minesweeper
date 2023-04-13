@@ -51,7 +51,7 @@ typedef struct {
  * @var use_color
  * @brief Used to check if we can use color at runtime
  */
-bool use_color = false;
+static bool use_color = false;
 
 /**
  * @brief Parses a resolution string with format `WIDTHxHEIGHT` using atoi.
