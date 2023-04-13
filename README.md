@@ -32,7 +32,7 @@ Usage:
 ```console
 $ ./minesweeper.out --keys
 Controls:
-    <arrows> - Move in the grid
+    <arrows> - Move in the grid (unsupported)
         hjkl - Move in the grid (vim-like)
      <space> - Reveal tile
     <LMouse> - Reveal clicked bomb

@@ -121,7 +121,7 @@ static inline bool parse_args(int argc, char** argv, ms_t* ms) {
             }
         } else if (!strcmp(argv[i], "-k") || !strcmp(argv[i], "--keys")) {
             printf("Controls:\n"
-                   "    <arrows> - Move in the grid\n"
+                   "    <arrows> - Move in the grid (unsupported)\n"
                    "        hjkl - Move in the grid (vim-like)\n"
                    "     <space> - Reveal tile\n"
                    "           f - Flag bomb\n"
